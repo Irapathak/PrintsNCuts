@@ -1,0 +1,12 @@
+import {checkConfig,production,mailMode,baseUrl} from '../config.js';
+import {existsSync} from 'node:fs';
+checkConfig();
+console.log('Configuration validation passed.');
+console.log('Environment:',production?'production':'development');
+console.log('App origin:',baseUrl);
+console.log('Mail mode:',mailMode);
+console.log('Resend key present:',Boolean(process.env.RESEND_API_KEY));
+console.log('Sender configured:',Boolean(process.env.MAIL_FROM));
+console.log('Data directory configured:',Boolean(process.env.DATA_DIR));
+console.log('Existing database:',process.env.DATA_DIR?existsSync(process.env.DATA_DIR+'/market.db'):'default path');
+console.log('No live email was sent; domain verification and hosting persistence must still be checked.');
