@@ -1,0 +1,11 @@
+import {DatabaseSync} from 'node:sqlite';
+import {resolve} from 'node:path';
+import {existsSync} from 'node:fs';
+const file=process.argv[2];if(!file||!existsSync(file))throw Error('Usage: npm run check:backup -- /path/to/backup.db');
+const db=new DatabaseSync(resolve(file),{readOnly:true});
+const integrity=db.prepare('PRAGMA integrity_check').get();
+if(Object.values(integrity)[0]!=='ok')throw Error('Backup failed integrity check');
+console.log('Integrity: OK');
+for(const name of ['users','listings','conversations','messages'])console.log(name,db.prepare('SELECT COUNT(*) count FROM '+name).get().count);
+const foreign=db.prepare('PRAGMA foreign_key_check').all();if(foreign.length)throw Error('Backup has broken foreign keys');
+db.close();console.log('Structural checks passed. Also test this backup in an isolated restored app.');

@@ -1,0 +1,11 @@
+import '../config.js';
+import {DatabaseSync,backup} from 'node:sqlite';
+import {mkdirSync,existsSync} from 'node:fs';
+import {resolve} from 'node:path';
+const dir=resolve(process.env.DATA_DIR||'data');
+if(!existsSync(dir+'/market.db'))throw Error('No database at DATA_DIR');
+const folder=dir+'/backups';mkdirSync(folder,{recursive:true,mode:0o700});
+const path=folder+'/market-'+new Date().toISOString().replace(/[:.]/g,'-')+'.db';
+const db=new DatabaseSync(dir+'/market.db');await backup(db,path);db.close();
+console.log('Database backup:',path);
+console.log('Copy this backup AND the uploads folder to private off-server storage. Do not copy an active market.db file directly.');
